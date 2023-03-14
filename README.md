@@ -66,3 +66,24 @@ Otherwise, you can install Rowy Run manually.
    ```bash
    ./deploy.sh --project [ID]
    ```
+
+### Cloudbuild deploy
+
+It assumes existing `service account` responsible for `rowy-backend`
+
+    rowy-backend@${PROJECT_ID}.iam.gserviceaccount.com
+
+with permissions:
+    
+      - logging.viewer // provide access to logs for the frontend
+      - logging.logWriter // log events such as auditing
+      - iam.serviceAccountUser //used for cloud function deployment
+      - artifactregistry.admin //used for cloud function deployment
+      - cloudbuild.builds.builder //used for cloud function deployment
+      - actions.Admin //used for cloud function deployment
+      - cloudfunctions.admin //used for cloud function deployment
+      - secretmanager.viewer // view secretmanager metadata, such as secret Names for IDE validation
+      - firebaseauth.admin //used for managing user roles
+      - datastore.user // access to firestore
+      - storage.objectAdmin // access to storage
+      - secretmanager.secretAccessor // access to secrets for actionScripts

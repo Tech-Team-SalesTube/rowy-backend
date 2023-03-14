@@ -1,0 +1,56 @@
+steps:
+  # Pull the container image for cache purposes
+  - name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        docker pull gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest || exit 0
+  # Build the container image
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "--network=cloudbuild",
+        "-t",
+        "gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest",
+        "--cache-from",
+        "gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest",
+        "-f",
+        "$_DOCKERFILE_PATH",
+        ".",
+      ]
+  # Push the container image to Container Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest"]
+  # Deploy container image to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "gcloud"
+    args:
+      - "run"
+      - "deploy"
+      - "$_SERVICE_NAME"
+      - "--image"
+      - "gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest"
+      - "--region"
+      - "$_DEPLOY_REGION"
+      - "--allow-unauthenticated"
+      - --service-account
+      - "$_SERVICE_ACCOUNT"
+      - "--memory"
+      - 1Gi
+      - "--platform"
+      - "managed"
+      - "--timeout"
+      - "600"
+    timeout: "3600s"
+options:
+  dynamic_substitutions: true
+substitutions:
+  _DEPLOY_REGION: europe-central2
+  _DOCKERFILE_PATH: ./Dockerfile
+  _SERVICE_NAME: rowy-backend-pubsub
+  _SERVICE_ACCOUNT: "rowy-backend@${PROJECT_ID}.iam.gserviceaccount.com"
+tags:
+  - "$_SERVICE_NAME"
+  - "$BRANCH_NAME"
