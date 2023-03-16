@@ -6,6 +6,7 @@ steps:
       - "-c"
       - |
         docker pull gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest || exit 0
+  # - name:
   # Build the container image
   - name: "gcr.io/cloud-builders/docker"
     args:
@@ -38,9 +39,11 @@ steps:
       - --service-account
       - "$_SERVICE_ACCOUNT"
       - "--memory"
-      - 1Gi
+      - 2Gi
       - "--platform"
       - "managed"
+      - --decription
+      - "Branch [${BRANCH_NAME}]. Backend for rowy-frontend deployed in firebase."
       - "--timeout"
       - "600"
     timeout: "3600s"
@@ -49,7 +52,7 @@ options:
 substitutions:
   _DEPLOY_REGION: europe-central2
   _DOCKERFILE_PATH: ./Dockerfile
-  _SERVICE_NAME: rowy-backend-pubsub
+  _SERVICE_NAME: "rowy-backend-${BRANCH_NAME}"
   _SERVICE_ACCOUNT: "rowy-backend@${PROJECT_ID}.iam.gserviceaccount.com"
 tags:
   - "$_SERVICE_NAME"
