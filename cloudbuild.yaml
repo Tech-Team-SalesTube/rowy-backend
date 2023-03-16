@@ -42,7 +42,7 @@ steps:
       - 2Gi
       - "--platform"
       - "managed"
-      - --decription
+      - --description
       - "Branch [${BRANCH_NAME}]. Backend for rowy-frontend deployed in firebase."
       - "--timeout"
       - "600"
