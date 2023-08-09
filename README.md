@@ -87,3 +87,6 @@ with permissions:
       - datastore.user // access to firestore
       - storage.objectAdmin // access to storage
       - secretmanager.secretAccessor // access to secrets for actionScripts
+
+
+and created Artifact Repository `rowy-backend` for docker image versioning/cache.
